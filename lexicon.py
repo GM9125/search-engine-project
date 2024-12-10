@@ -1,42 +1,32 @@
 import pandas as pd
-import re
-from dataset.clean_dataset import clean_text  # Assuming you're using clean_text for tokenization and cleaning
+from nltk.tokenize import word_tokenize
 
-def create_lexicon(df, lexicon):
-    """Creates a lexicon that maps each word to a unique wordID."""
-    word_id = len(lexicon) + 1  # Start from the next available wordID
-    
-    # Iterate through each document to populate the lexicon
-    for index, row in df.iterrows():
-        title = row['title']  # Assuming the 'title' column contains cleaned titles
-        
-        # Clean and tokenize the title using the clean_text function
-        words = clean_text(title)
-        
-        # Add words to lexicon and assign unique word ID
-        for word in words:
+# File paths
+input_file = r"C:\Users\AT\CSV Dataset files\cleaned_articles_test.csv"
+output_lexicon_file = r"C:\Users\AT\CSV Dataset files\lexicon.csv"
+
+# Create a lexicon mapping words to unique IDs
+def create_lexicon(df):
+    lexicon = {}
+    word_id = 1
+    for text in df["cleaned_text"]:
+        if not isinstance(text, str):
+            continue
+        tokens = word_tokenize(text)  # Tokenize the text
+        for word in tokens:
             if word not in lexicon:
                 lexicon[word] = word_id
-                word_id += 1  # Increment wordID for each new word
-    
+                word_id += 1
     return lexicon
 
-# Function to process the dataset in chunks
-def process_chunks(input_file, chunk_size=10000):
-    """Process the dataset in chunks and update the lexicon."""
-    lexicon = {}  # Initialize lexicon
-    
-    # Read the input file in chunks
-    for chunk in pd.read_csv(input_file, chunksize=chunk_size, encoding='utf-8', on_bad_lines='skip'):
-        print(f"Processing chunk with {len(chunk)} rows...")
-        # Update the lexicon for the current chunk
-        lexicon = create_lexicon(chunk, lexicon)
-    
-    return lexicon
+# Load the cleaned dataset
+df = pd.read_csv(input_file)
 
-# Example usage
-input_file = r"C:\Users\AT\Documents\GitHub\search-engine-project\cleaned_dataset.csv"  # Adjust to the correct path
-lexicon = process_chunks(input_file)
+# Generate the lexicon
+lexicon = create_lexicon(df)
 
-# Print the lexicon
-print(lexicon)
+# Save the lexicon to a CSV file
+lexicon_df = pd.DataFrame(list(lexicon.items()), columns=["word", "word_id"])
+lexicon_df.to_csv(output_lexicon_file, index=False)
+
+print(f"Lexicon saved to {output_lexicon_file}")

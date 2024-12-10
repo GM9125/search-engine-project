@@ -1,17 +1,33 @@
-from lexicon import create_lexicon  # Correct the import for create_lexicon
-from dataset.clean_dataset import clean_text  # Fix the import for clean_text
+import pandas as pd
+from nltk.tokenize import word_tokenize
 
+# File paths
+input_cleaned_file = r"C:\Users\AT\CSV Dataset files\cleaned_articles_test.csv"
+input_lexicon_file = r"C:\Users\AT\CSV Dataset files\lexicon.csv"
+output_forward_index_file = r"C:\Users\AT\CSV Dataset files\forward_index.csv"
+
+# Create forward index
 def create_forward_index(df, lexicon):
-    """Creates the forward index using the provided lexicon."""
     forward_index = {}
-    
-    # Iterate through each document to create the forward index
-    for index, row in df.iterrows():
-        title = row['title']
-        words = clean_text(title)  # Use clean_text for cleaning the title text
-        
-        # Get word IDs for the cleaned words
-        word_ids_for_doc = [lexicon[word] for word in words if word in lexicon]
-        forward_index[index] = word_ids_for_doc  # Store word IDs for the document
-    
+    for idx, row in df.iterrows():
+        if not isinstance(row["cleaned_text"], str):
+            continue
+        tokens = word_tokenize(row["cleaned_text"])
+        word_ids = [lexicon[word] for word in tokens if word in lexicon]
+        forward_index[idx] = word_ids
     return forward_index
+
+# Load the cleaned dataset and lexicon
+df = pd.read_csv(input_cleaned_file)
+lexicon = pd.read_csv(input_lexicon_file).set_index("word").to_dict()["word_id"]
+
+# Generate the forward index
+forward_index = create_forward_index(df, lexicon)
+
+# Convert forward index to a DataFrame and save
+forward_index_df = pd.DataFrame(
+    [{"doc_id": doc_id, "word_ids": " ".join(map(str, word_ids))} for doc_id, word_ids in forward_index.items()]
+)
+forward_index_df.to_csv(output_forward_index_file, index=False)
+
+print(f"Forward index saved to {output_forward_index_file}")
