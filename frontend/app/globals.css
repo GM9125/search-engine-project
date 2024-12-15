@@ -1,0 +1,112 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #fff;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+}
+
+/* Search Container */
+.search-container {
+  margin-top: 3%; /* Reduced spacing from the top */
+}
+
+/* SearchIt Logo Styling */
+.logo {
+  font-family: 'Roboto', sans-serif;
+  font-size: 92px;
+  font-weight: 500;
+  letter-spacing: -3px;
+}
+
+/* Google-Style Logo Colors */
+.logo .blue { color: #4285f4; }
+.logo .red { color: #ea4335; }
+.logo .yellow { color: #fbbc05; }
+.logo .green { color: #34a853; }
+
+/* Search Bar Styling */
+.search-bar {
+  margin-top: 10px; /* Reduced space below the logo */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Search Input */
+.search-bar input {
+  width: 40%; /* Adjust the width of the search bar */
+  padding: 13px 20px;
+  font-size: 16px;
+  border: 1px solid #dfe1e5;
+  border-radius: 24px;
+  outline: none;
+  transition: box-shadow 0.2s;
+  padding-right: 35px; /* Space for the search icon */
+}
+
+/* Search Icon inside the search bar */
+.search-bar .search-icon {
+  position: absolute;
+  right: 31%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKhSURBVEiJ1ZU9TFNRFMd/571HCYgWHTShdjEaBwkxkUE6qUUlGI2DlqAMDBIdmZDExHRTNMFBBhIXB0HAmGjUBGy1Jiqt38Q46WRMqi4KUh5a2x6HvgJ+vFajxvif7j33nPM75+Te9+B/lxQ7tGN1K62sNiu62h6rSM0+NlMqEvNF409+C2CP1fot0zgJGir4zMTKxz8mygKOy8NcTjt9scTdUgDjW0P6em29ZcoD0Ba3AoB6w5BbycZAxy8B7LFaP4ZcBVY4poig28qyUpV8PrvZyJnrEfqADGCJav/rxsCOYoCvKkxH64acylHkmCf49IgI+m1QMtjQJHAZ8IC8yti61h+PzxbtwI7VrXRmDhBxSw5QcyM+isrR/E79VuVcnDvAympzoSNBT7olL0gXfToN2ACIuI5pDqDo6nmYMV4sOUDNlUf2TFlVwvZUTaasxTVuflZhccr2pUyycc3B8NtVaXhaisGhzRcFtBpYxqi3OOCSvSQF0gBQvvT9OmCiWPJwWI07fFjnbF+6+c2NSNSMFdZZlQOlqr9dMb0LWO5E3ywJiLcOPRH0YR7GwYbBvU1uQVt6bZ9ors/Z2oI5UBIAoCKdOI9IDbm88Xzo8IYrOysL5+GwGsGeD7uNdPoeIj7HfDVyeFHSDfDdp2DjcKgDpX8B3Aad8Lxre+GZ3tTE/CsvKKOibTe6qodLdgCQaBk5k1PdBbxyTJUgAZH0mgXJbYRB4DNgicrA1uNTbT8FALjfeuGaGLoWoR24oDCByBtgFKRLsNZEu7z7Fd3nQEwVzv4IUvR/8DMK9kzuEeQ8+SufFaU90u0998cAAI3HJ0OIDDiQDMruaLf3GriM6FcV7a4eUbSV/A18pjlJ/Im832nrianm7b1Ty/5K8n+mL8Nd7ZIEmEQLAAAAAElFTkSuQmCC') no-repeat center;
+  background-size: contain;
+  border: none;
+  cursor: pointer;
+}
+
+/* Focused Input */
+.search-bar input:focus {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Google-Style Search Results */
+.search-results {
+  margin-top: 20px; /* Reduced spacing between search bar and results */
+  text-align: left;
+  width: 60%;
+  margin: 20px auto 0 auto;
+}
+
+/* Individual Search Result */
+.search-result {
+  margin-bottom: 15px; /* Slightly reduced spacing between results */
+}
+
+.result-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1a0dab; /* Google blue color for the title */
+}
+
+.result-title a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.result-url {
+  color: #006621; /* Google green color for URLs */
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.result-snippet {
+  font-size: 14px;
+  color: #4d5156; /* Google grey color for the snippet */
+}
+
+/* No Results Message */
+.no-results {
+  color: #ea4335; /* Red */
+  font-weight: bold;
+}

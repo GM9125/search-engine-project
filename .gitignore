@@ -1,0 +1,17 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore Next.js build output
+.next/
+
+# Ignore environment variables
+.env.local
+.env.development.local
+.env.production.local
+
+# Ignore log files
+*.log
+
+# Ignore lockfiles (optional)
+package-lock.json
+yarn.lock
