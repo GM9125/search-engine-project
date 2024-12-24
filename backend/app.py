@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from search import SearchEngine  # Ensure this file exists and works
+from search import SearchEngine
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -16,15 +16,26 @@ search_engine = SearchEngine(
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('query', '').strip()
+    page = int(request.args.get('page', 1))  # Default to page 1 if not provided
+
     if not query:
         return jsonify({'error': 'Query parameter is required'}), 400
 
     try:
-        # Perform search and return results
         results = search_engine.search(query)
-        return jsonify({'results': results}), 200
+        per_page = 10  # Number of results per page
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_results = results[start:end]
+
+        return jsonify({
+            'results': paginated_results,
+            'total_results': len(results),
+            'page': page,
+            'total_pages': (len(results) + per_page - 1) // per_page  # Calculate total pages
+        }), 200
     except Exception as e:
-        return jsonify({'error': f"An error occurred: {str(e)}"}), 500
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/health', methods=['GET'])
 def health_check():

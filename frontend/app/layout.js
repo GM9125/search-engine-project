@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "My Search Engine",
+  title: "SearchIT",
   description: "A Google-like search engine",
 };
 
