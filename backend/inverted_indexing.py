@@ -3,6 +3,9 @@ import os
 import numpy as np
 import multiprocessing
 from collections import defaultdict
+import warnings
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 class InvertedIndexGenerator:
     def __init__(self, 
@@ -11,7 +14,7 @@ class InvertedIndexGenerator:
                  output_barrels_folder):
         """
         Initialize the inverted index generator.
-        
+
         Args:
             input_forward_index_file (str): Path to forward index file
             output_inverted_index_file (str): Path to save full inverted index
@@ -27,10 +30,10 @@ class InvertedIndexGenerator:
     def _process_forward_index_chunk(self, chunk):
         """
         Process a chunk of forward index to create inverted index.
-        
+
         Args:
             chunk (pd.DataFrame): Chunk of forward index data
-        
+
         Returns:
             dict: Partial inverted index for the chunk
         """
@@ -46,14 +49,14 @@ class InvertedIndexGenerator:
         
         return dict(inverted_index)
 
-    def _distribute_to_barrels(self, inverted_index, num_barrels=5):
+    def _distribute_to_barrels(self, inverted_index, num_barrels=10):
         """
         Distribute inverted index to multiple barrels.
-        
+
         Args:
             inverted_index (dict): Full inverted index
             num_barrels (int): Number of barrels to distribute
-        
+
         Returns:
             list: Barrels with distributed word IDs
         """
@@ -66,14 +69,14 @@ class InvertedIndexGenerator:
         
         return barrels
 
-    def create_inverted_index(self, num_processes=None, num_barrels=5):
+    def create_inverted_index(self, num_processes=None, num_barrels=10):
         """
         Create inverted index with parallel processing and barrel distribution.
-        
+
         Args:
             num_processes (int, optional): Number of processes
             num_barrels (int): Number of inverted index barrels
-        
+
         Returns:
             dict: Complete inverted index
         """
@@ -106,11 +109,17 @@ class InvertedIndexGenerator:
                 for word_id, doc_ids in full_inverted_index.items()
             }
             
-            # Save full inverted index
-            inverted_index_df = pd.DataFrame([
-                {"word_id": word_id, "doc_ids": " ".join(map(str, doc_ids))}
+            # Sort the inverted index by word_id
+            full_inverted_index = dict(sorted(full_inverted_index.items()))
+            
+            # Save the full inverted index in the desired format (word_id : doc_ids)
+            inverted_index_df = pd.DataFrame([{
+                "word_id": word_id, 
+                "doc_ids": " ".join(map(str, doc_ids))} 
                 for word_id, doc_ids in full_inverted_index.items()
             ])
+            
+            # Save to CSV with columns "word_id" and "doc_ids"
             inverted_index_df.to_csv(self.output_inverted_index_file, index=False)
             
             # Distribute to barrels
@@ -118,8 +127,9 @@ class InvertedIndexGenerator:
             
             # Save each barrel to a separate file
             for i, barrel in enumerate(inverted_index_barrels):
-                barrel_df = pd.DataFrame([
-                    {"word_id": word_id, "doc_ids": " ".join(map(str, doc_ids))}
+                barrel_df = pd.DataFrame([{
+                    "word_id": word_id, 
+                    "doc_ids": " ".join(map(str, doc_ids))}
                     for word_id, doc_ids in barrel.items()
                 ])
                 barrel_file = os.path.join(
@@ -140,9 +150,9 @@ class InvertedIndexGenerator:
 
 def main():
     # File paths
-    input_forward_index_file = r"C:\Users\AT\CSV Dataset files\forward_index.csv"
-    output_inverted_index_file = r"C:\Users\AT\CSV Dataset files\inverted_index.csv"
-    output_barrels_folder = r"C:\Users\AT\CSV Dataset files\barrels_inverted_index"
+    input_forward_index_file = r"C:\Users\AT\CSV Dataset files\forward_indexing.csv"
+    output_inverted_index_file = r"C:\Users\AT\CSV Dataset files\inverted_indexing.csv"
+    output_barrels_folder = r"C:\Users\AT\CSV Dataset files\inverted_index_barrels"
     
     try:
         # Initialize and run inverted index generator

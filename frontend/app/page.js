@@ -133,7 +133,7 @@ export default function SearchPage() {
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Search..."
+          placeholder="Search the web"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
