@@ -50,50 +50,66 @@ export default function SearchPage() {
     setLoading(false); // End loading indicator
   };
 
+  // Modify handlePageChange to use window.location.replace
   const handlePageChange = async (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
       setLoading(true);
-      await fetchResults(newPage);
-      setLoading(false);
+      const url = new URL(window.location);
+      url.searchParams.set('page', newPage);
+      window.location.replace(url); // This will cause a full page refresh
     }
   };
 
-  // Add this effect to handle initial load and browser navigation
+  // Replace the existing useEffect with this updated version
   useEffect(() => {
-    const url = new URL(window.location);
-    const pageParam = url.searchParams.get('page');
-    const queryParam = url.searchParams.get('q');
+    const handleInitialLoad = async () => {
+      const url = new URL(window.location);
+      const pageParam = url.searchParams.get('page');
+      const queryParam = url.searchParams.get('q');
 
-    const fetchInitialResults = async (page) => {
-      setResults([]); // Clear results before fetching new ones
-      window.scrollTo(0, 0); // Scroll to top
+      if (queryParam) {
+        setQuery(queryParam);
+        setSearched(true);
+        setLoading(true);
+        
+        try {
+          const response = await fetch(
+            `http://127.0.0.1:5000/search?query=${encodeURIComponent(queryParam)}&page=${pageParam || 1}`
+          );
 
-      try {
-        const response = await fetch(
-          `http://127.0.0.1:5000/search?query=${encodeURIComponent(queryParam)}&page=${page}`
-        );
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          const data = await response.json();
+          setResults(data.results || []);
+          setCurrentPage(parseInt(pageParam) || 1);
+          setTotalPages(data.total_pages);
+        } catch (error) {
+          console.error("Error fetching data:", error.message);
+          setResults([]);
+        } finally {
+          setLoading(false);
         }
-
-        const data = await response.json();
-        setResults(data.results || []);
-        setCurrentPage(data.page);
-        setTotalPages(data.total_pages);
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
-        alert("Failed to fetch search results. Please try again.");
+      } else {
+        // Clear everything if no query parameter exists
+        setQuery("");
         setResults([]);
+        setSearched(false);
+        setCurrentPage(1);
+        setTotalPages(0);
       }
     };
 
-    if (queryParam) {
-      setQuery(queryParam);
-      setSearched(true);
-      fetchInitialResults(pageParam ? parseInt(pageParam) : 1);
-    }
-  }, []);
+    // Add event listener for popstate (browser back/forward buttons)
+    window.addEventListener('popstate', handleInitialLoad);
+    handleInitialLoad();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('popstate', handleInitialLoad);
+    };
+  }, []); // Empty dependency array since we want this to run only once on mount
 
   const renderPagination = () => {
     const visiblePages = 5; // Number of visible page links
