@@ -11,7 +11,7 @@ node_modules/
 
 # Ignore log files
 *.log
-
+__pycache__
 # Ignore lockfiles (optional)
 package-lock.json
 yarn.lock

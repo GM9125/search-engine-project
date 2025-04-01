@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Add useEffect import
 
 export default function SearchPage() {
-  const [query, setQuery] = useState(""); 
+  const [query, setQuery] = useState(""); // Store search query
   const [results, setResults] = useState([]); // Store search results
   const [currentPage, setCurrentPage] = useState(1); // Current page
   const [totalPages, setTotalPages] = useState(0); // Total pages
@@ -10,6 +10,9 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false); // Track loading state
 
   const fetchResults = async (page = 1) => {
+    setResults([]); // Clear results before fetching new ones
+    window.scrollTo(0, 0); // Scroll to top
+
     try {
       const response = await fetch(
         `http://127.0.0.1:5000/search?query=${encodeURIComponent(query)}&page=${page}`
@@ -23,6 +26,12 @@ export default function SearchPage() {
       setResults(data.results || []);
       setCurrentPage(data.page);
       setTotalPages(data.total_pages);
+
+      // Update URL with current query and page
+      const url = new URL(window.location);
+      url.searchParams.set('q', query);
+      url.searchParams.set('page', page);
+      window.history.pushState({}, '', url);
     } catch (error) {
       console.error("Error fetching data:", error.message);
       alert("Failed to fetch search results. Please try again.");
@@ -48,6 +57,43 @@ export default function SearchPage() {
       setLoading(false);
     }
   };
+
+  // Add this effect to handle initial load and browser navigation
+  useEffect(() => {
+    const url = new URL(window.location);
+    const pageParam = url.searchParams.get('page');
+    const queryParam = url.searchParams.get('q');
+
+    const fetchInitialResults = async (page) => {
+      setResults([]); // Clear results before fetching new ones
+      window.scrollTo(0, 0); // Scroll to top
+
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:5000/search?query=${encodeURIComponent(queryParam)}&page=${page}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setResults(data.results || []);
+        setCurrentPage(data.page);
+        setTotalPages(data.total_pages);
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+        alert("Failed to fetch search results. Please try again.");
+        setResults([]);
+      }
+    };
+
+    if (queryParam) {
+      setQuery(queryParam);
+      setSearched(true);
+      fetchInitialResults(pageParam ? parseInt(pageParam) : 1);
+    }
+  }, []);
 
   const renderPagination = () => {
     const visiblePages = 5; // Number of visible page links
