@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 
 export default function SearchPage() {
-  const [query, setQuery] = useState(""); // Store search query
+  const [query, setQuery] = useState(""); 
   const [results, setResults] = useState([]); // Store search results
   const [currentPage, setCurrentPage] = useState(1); // Current page
   const [totalPages, setTotalPages] = useState(0); // Total pages
